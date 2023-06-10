@@ -1,3 +1,4 @@
 import TextField from "./TextField";
+import Loader from "./Loader";
 
-export { TextField };
+export { TextField, Loader };
