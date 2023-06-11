@@ -5,7 +5,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { API_URL } from "../config/api";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 
 const modules = {
   toolbar: [
@@ -50,6 +50,7 @@ const CampaignCreation = () => {
   const [soilId, setSoilId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [campaignCreated, setCampaignCreated] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -117,13 +118,16 @@ const CampaignCreation = () => {
     const formData = makeFormData();
     setLoading(true);
     try {
-      await axios.post(`${API_URL}/campaigns`, formData, {
+      const response = await axios.post(`${API_URL}/campaigns`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,
           "x-refresh": refreshToken,
         },
       });
+      if(response.status === 201) {
+        setCampaignCreated(true)
+      }
     } catch (error) {
       if (error.response.status === 400) {
         setErrors(error.response.data.errors);
@@ -147,6 +151,10 @@ const CampaignCreation = () => {
     getSoilOptions();
   }, []);
 
+  if(campaignCreated) {
+    return <Navigate to="/campaigns/create/success" />
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="max-w-[430px] mx-auto border min-h-screen p-4 bg-tertiary space-y-4">
@@ -155,6 +163,7 @@ const CampaignCreation = () => {
           onChange={(e) => setTitle(e.target.value)}
           label="Judul"
           error={errors.title}
+          name="title"
         />
         <div className="flex flex-col">
           <div className="relative">
@@ -163,6 +172,7 @@ const CampaignCreation = () => {
               className="block px-2.5 pl-10 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-primary peer"
               placeholder=" "
               type="number"
+              name="target"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
             />
@@ -202,12 +212,14 @@ const CampaignCreation = () => {
           onChange={(e) => setSlug(e.target.value)}
           label="Slug"
           error={errors.slug}
+          name="slug"
         />
         <TextField
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           label="Lokasi"
           error={errors.location}
+          name="location"
         />
         <div className="w-full space-y-2">
           <label className="font-semibold">Durasi kampanye</label>

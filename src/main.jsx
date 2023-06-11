@@ -7,12 +7,17 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import CampaignCreation from './pages/CampaignCreation.jsx';
+import CampaignCreationSuccess from './pages/CampaignCreationSuccess.jsx';
 
 const router = createBrowserRouter([
   {
     path: '/campaigns/create',
     element: <CampaignCreation />
-  }
+  },
+  {
+    path: '/campaigns/create/success',
+    element: <CampaignCreationSuccess />
+  },
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(

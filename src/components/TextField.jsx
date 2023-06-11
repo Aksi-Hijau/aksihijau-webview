@@ -1,7 +1,7 @@
 import React from "react";
 
 // eslint-disable-next-line react/prop-types
-const TextField = ({ value, onChange, label, error }) => {
+const TextField = ({ value, onChange, label, error, name }) => {
   return (
     <div className="flex flex-col">
       <div className="relative">
@@ -12,6 +12,7 @@ const TextField = ({ value, onChange, label, error }) => {
           placeholder=" "
           value={value}
           onChange={onChange}
+          name={name}
         />
         <label
           htmlFor="floating_outlined"
