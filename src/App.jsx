@@ -12,6 +12,9 @@ const App = () => {
   return (
     <Router>
       <Switch>
+        <Route exact path="/">
+          <div>Hello world</div>
+        </Route>
         <Route exact path="/campaigns/create" >
           <CampaignCreation />
         </Route>
