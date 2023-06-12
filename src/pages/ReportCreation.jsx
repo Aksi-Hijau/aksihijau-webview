@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { PrimaryButton, TextEditor, TextField } from "../components";
 import { API_URL } from "../config/api";
 import axios from "axios";
-import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom/cjs/react-router-dom.min";
+import useQuery from "../hooks/useQuery";
+import ReportCreationSuccess from "./ReportCreationSuccess";
 
 const ReportCreation = () => {
   const [title, setTitle] = useState("");
@@ -10,7 +12,7 @@ const ReportCreation = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({})
   const [reportCreated, setReportCreated] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useQuery();
   const [campaignExist, setCampaignExist] = useState(true)
   const { slug } = useParams()
 
@@ -32,6 +34,13 @@ const ReportCreation = () => {
     } catch (error) {
       if (error.response.status === 400) {
         setErrors(error.response.data.errors);
+      }
+      if (error.response.status === 403) {
+        if (error.response.data.errors) {
+          setErrors(error.response.data.errors);
+        } else {
+          setErrors({ user: 'Your token is not valid' })
+        }
       }
     }
     setLoading(false)
@@ -61,12 +70,13 @@ const ReportCreation = () => {
     checkSlug()
   }, [])
 
-  if(reportCreated) {
-    return <Navigate to="/reports/create/success" />
-  }
 
   if(!campaignExist) {
     return <div>Campaign with slug: {slug} is not found</div>
+  }
+
+  if (reportCreated) {
+    return <ReportCreationSuccess />;
   }
 
   return (
@@ -86,6 +96,11 @@ const ReportCreation = () => {
             <span className="text-red-500 text-sm">{errors.body}</span>
           )}
         </div>
+        { errors.user && (
+          <div>
+            <p className="text-red-500">{ errors.user }</p>
+          </div>
+        )}
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <PrimaryButton loading={loading} label="Buat" />
         </div>
