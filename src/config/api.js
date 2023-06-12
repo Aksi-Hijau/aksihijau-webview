@@ -1,1 +1,1 @@
-export const API_URL = 'http://localhost:8080/api'
+export const API_URL = 'https://rational-text-381300.et.r.appspot.com/api'

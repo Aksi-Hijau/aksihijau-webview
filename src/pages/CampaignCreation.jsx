@@ -1,40 +1,11 @@
 import { useEffect, useState } from "react";
-import { Loader, TextField } from "../components";
+import { Loader, PrimaryButton, TextEditor, TextField } from "../components";
 import addSquare from "../assets/add-square-svgrepo-com.svg";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { API_URL } from "../config/api";
 import { Navigate, useSearchParams } from "react-router-dom";
-
-const modules = {
-  toolbar: [
-    [{ header: [1, 2, false] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [
-      { list: "ordered" },
-      { list: "bullet" },
-      { indent: "-1" },
-      { indent: "+1" },
-    ],
-    ["link", "image"],
-    ["clean"],
-  ],
-};
-
-const formats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-];
 
 const CampaignCreation = () => {
   const [title, setTitle] = useState("");
@@ -50,12 +21,14 @@ const CampaignCreation = () => {
   const [soilId, setSoilId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [campaignCreated, setCampaignCreated] = useState(false)
+  const [campaignCreated, setCampaignCreated] = useState(false);
+  const [autoSelect, setAutoSelect] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const accessToken = searchParams.get("accessToken");
   const refreshToken = searchParams.get("refreshToken");
+  const soil = searchParams.get("soil") || "";
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -125,8 +98,8 @@ const CampaignCreation = () => {
           "x-refresh": refreshToken,
         },
       });
-      if(response.status === 201) {
-        setCampaignCreated(true)
+      if (response.status === 201) {
+        setCampaignCreated(true);
       }
     } catch (error) {
       if (error.response.status === 400) {
@@ -151,8 +124,16 @@ const CampaignCreation = () => {
     getSoilOptions();
   }, []);
 
-  if(campaignCreated) {
-    return <Navigate to="/campaigns/create/success" />
+  if (campaignCreated) {
+    return <Navigate to="/campaigns/create/success" />;
+  }
+
+  if (!autoSelect && soil && soils.length > 0) {
+    const selectedSoils = soils.find(item => item.type.toLowerCase() === soil.toLowerCase())
+    if (selectedSoils) {
+      setSoilId(parseInt(selectedSoils.id))
+      setAutoSelect(true)
+    }
   }
 
   return (
@@ -196,13 +177,18 @@ const CampaignCreation = () => {
             onChange={(e) => setSoilId(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-primary"
           >
-            <option selected>Pilih jenis tanah</option>
-            {soils.map((soil) => (
-              <option value={soil.id} key={soil.id}>
-                {soil.type}
+            <option selected value="">Pilih jenis tanah</option>
+            {soils.map((soilItem) => (
+              <option
+                value={soilItem.id}
+                selected={soil.toLowerCase() === soilItem.type.toLowerCase()}
+                key={soilItem.id}
+              >
+                {soilItem.type}
               </option>
             ))}
           </select>
+
           {errors.soilId && (
             <span className="text-red-500 text-sm">{errors.soilId}</span>
           )}
@@ -353,24 +339,13 @@ const CampaignCreation = () => {
         </div>
         <div className="space-y-2">
           <label className="font-semibold">Deskripsi kampanye</label>
-          <ReactQuill
-            modules={modules}
-            formats={formats}
-            theme="snow"
-            value={description}
-            onChange={setDescription}
-          />
+          <TextEditor value={description} onChange={setDescription} />
           {errors.description && (
             <span className="text-red-500 text-sm">{errors.description}</span>
           )}
         </div>
         <div className="pt-4 pb-2">
-          <button
-            type="submit"
-            className="w-full bg-primary text-white py-4 rounded-3xl my-4 text-semibold flex justify-center items-center"
-          >
-            { loading ? <Loader /> : 'Buat' }
-          </button>
+          <PrimaryButton loading={loading} label="Buat" />
         </div>
       </div>
     </form>

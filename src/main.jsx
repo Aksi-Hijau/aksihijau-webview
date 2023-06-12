@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import CampaignCreation from './pages/CampaignCreation.jsx';
 import CampaignCreationSuccess from './pages/CampaignCreationSuccess.jsx';
+import ReportCreation from './pages/ReportCreation.jsx';
+import ReportCreationSuccess from './pages/ReportCreationSuccess.jsx';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +19,14 @@ const router = createBrowserRouter([
   {
     path: '/campaigns/create/success',
     element: <CampaignCreationSuccess />
+  },
+  {
+    path: '/campaigns/:slug/reports',
+    element: <ReportCreation />
+  },
+  {
+    path: '/reports/create/success',
+    element: <ReportCreationSuccess />
   },
 ])
 
