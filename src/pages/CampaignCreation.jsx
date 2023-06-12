@@ -6,6 +6,7 @@ import axios from "axios";
 import { API_URL } from "../config/api";
 import useQuery from "../hooks/useQuery";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+import CampaignCreationSuccess from "./CampaignCreationSuccess";
 
 const CampaignCreation = () => {
   const [title, setTitle] = useState("");
@@ -22,7 +23,7 @@ const CampaignCreation = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [campaignCreated, setCampaignCreated] = useState(false);
-  const [autoSelect, setAutoSelect] = useState(false)
+  const [autoSelect, setAutoSelect] = useState(false);
 
   const searchParams = useQuery();
 
@@ -105,6 +106,9 @@ const CampaignCreation = () => {
       if (error.response.status === 400) {
         setErrors(error.response.data.errors);
       }
+      if (error.response.status === 403) {
+        setErrors({ user: "Your token is invalid" });
+      }
     }
     setLoading(false);
   };
@@ -124,16 +128,29 @@ const CampaignCreation = () => {
     getSoilOptions();
   }, []);
 
-  if (campaignCreated) {
-    return <Redirect to="/campaigns/create/success" />;
+  if (!autoSelect && soil && soils.length > 0) {
+    const selectedSoils = soils.find(
+      (item) => item.type.toLowerCase() === soil.toLowerCase()
+    );
+    if (selectedSoils) {
+      setSoilId(parseInt(selectedSoils.id));
+      setAutoSelect(true);
+    }
   }
 
-  if (!autoSelect && soil && soils.length > 0) {
-    const selectedSoils = soils.find(item => item.type.toLowerCase() === soil.toLowerCase())
-    if (selectedSoils) {
-      setSoilId(parseInt(selectedSoils.id))
-      setAutoSelect(true)
-    }
+  if (!accessToken || !refreshToken) {
+    return (
+      <div>
+        <p className="text-red-500">access token or refresh token not found</p>
+        <p>details: </p>
+        <p>Access Token: {accessToken || "null"}</p>
+        <p>Refresh Token: {refreshToken || "null"}</p>
+      </div>
+    );
+  }
+
+  if (campaignCreated) {
+    return <CampaignCreationSuccess />;
   }
 
   return (
@@ -177,7 +194,9 @@ const CampaignCreation = () => {
             onChange={(e) => setSoilId(e.target.value)}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-primary"
           >
-            <option selected value="">Pilih jenis tanah</option>
+            <option selected value="">
+              Pilih jenis tanah
+            </option>
             {soils.map((soilItem) => (
               <option
                 value={soilItem.id}
@@ -342,6 +361,16 @@ const CampaignCreation = () => {
           <TextEditor value={description} onChange={setDescription} />
           {errors.description && (
             <span className="text-red-500 text-sm">{errors.description}</span>
+          )}
+        </div>
+        <div>
+          {errors.user && (
+            <>
+              <span className="text-red-500 text-sm">{errors.user}</span>
+              <p>details: </p>
+              <p>Access Token: {accessToken || "null"}</p>
+              <p>Refresh Token: {refreshToken || "null"}</p>
+            </>
           )}
         </div>
         <div className="pt-4 pb-2">
