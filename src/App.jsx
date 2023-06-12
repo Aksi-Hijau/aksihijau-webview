@@ -13,10 +13,9 @@ const App = () => {
     <Router>
       <Switch>
         <Route exact path="/">
-          <div>Hello world</div>
+          <CampaignCreation />
         </Route>
         <Route exact path="/campaigns/create" >
-          <CampaignCreation />
         </Route>
         <Route exact path="/campaigns/create/success" >
           <CampaignCreationSuccess />
