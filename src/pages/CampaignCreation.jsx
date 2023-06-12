@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Loader, PrimaryButton, TextEditor, TextField } from "../components";
+import { PrimaryButton, TextEditor, TextField } from "../components";
 import addSquare from "../assets/add-square-svgrepo-com.svg";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { API_URL } from "../config/api";
-import { Navigate, useSearchParams } from "react-router-dom";
+import useQuery from "../hooks/useQuery";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const CampaignCreation = () => {
   const [title, setTitle] = useState("");
@@ -24,7 +24,7 @@ const CampaignCreation = () => {
   const [campaignCreated, setCampaignCreated] = useState(false);
   const [autoSelect, setAutoSelect] = useState(false)
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useQuery();
 
   const accessToken = searchParams.get("accessToken");
   const refreshToken = searchParams.get("refreshToken");
@@ -125,7 +125,7 @@ const CampaignCreation = () => {
   }, []);
 
   if (campaignCreated) {
-    return <Navigate to="/campaigns/create/success" />;
+    return <Redirect to="/campaigns/create/success" />;
   }
 
   if (!autoSelect && soil && soils.length > 0) {
