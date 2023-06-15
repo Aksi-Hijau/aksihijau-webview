@@ -162,11 +162,12 @@ const CampaignCreation = () => {
           label="Judul"
           error={errors.title}
           name="title"
+          id="floating_title"
         />
         <div className="flex flex-col">
           <div className="relative">
             <input
-              id="floating_outlined"
+              id="floating_target"
               className="block px-2.5 pl-10 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-primary peer"
               placeholder=" "
               type="number"
@@ -175,7 +176,7 @@ const CampaignCreation = () => {
               onChange={(e) => setTarget(e.target.value)}
             />
             <label
-              htmlFor="floating_outlined"
+              htmlFor="floating_target"
               className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-tertiary dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-primary peer-focus:dark:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
             >
               Target
@@ -212,19 +213,40 @@ const CampaignCreation = () => {
             <span className="text-red-500 text-sm">{errors.soilId}</span>
           )}
         </div>
-        <TextField
-          value={slug}
-          onChange={(e) => setSlug(e.target.value)}
-          label="Slug"
-          error={errors.slug}
-          name="slug"
-        />
+        <div className="flex flex-col">
+          <div className="flex flex-row items-center">
+            <span className="left-4 font-semibold leading-none mt-4 top-[50%] translate-y-[-50%]">
+              aksihijau.com/
+            </span>
+            <div className="relative ml-3 w-full">
+              <input
+                id="floating_link"
+                className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-primary peer"
+                placeholder=" "
+                type="text"
+                name="slug"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+              />
+              <label
+                htmlFor="floating_link"
+                className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-tertiary dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-primary peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1"
+              >
+                Link untuk kampanye
+              </label>
+            </div>
+          </div>
+          {errors.slug && (
+            <span className="text-red-500 text-sm">Link is required</span>
+          )}
+        </div>
         <TextField
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           label="Lokasi"
           error={errors.location}
           name="location"
+          id="floating_location"
         />
         <div className="w-full space-y-2">
           <label className="font-semibold">Durasi kampanye</label>
